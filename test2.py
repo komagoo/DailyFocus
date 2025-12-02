@@ -10,7 +10,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- 2. 과몰입 CSS 스타일링 (주토피아 분위기 연출) ---
+# --- 2. 과몰입 CSS 스타일링 (스타일은 유지) ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+KR:wght@400;700&display=swap');
@@ -47,7 +47,7 @@ st.markdown("""
     }
     .quote-card:hover {
         transform: scale(1.02);
-        border-color: #ff9966; /* 닉의 오렌지색 포인트 */
+        border-color: #ff9966;
     }
 
     /* 명대사 텍스트 */
@@ -63,13 +63,13 @@ st.markdown("""
     /* 캐릭터 이름 */
     .character-name {
         font-size: 1.2rem;
-        color: #ffcc00; /* ZPD 뱃지 골드 */
+        color: #ffcc00;
         font-weight: 400;
         text-transform: uppercase;
         letter-spacing: 2px;
     }
 
-    /* 버튼 스타일 (주디의 당근 볼펜 느낌) */
+    /* 버튼 스타일 */
     .stButton>button {
         background: linear-gradient(90deg, #FF8008 0%, #FFC837 100%);
         color: white;
@@ -100,74 +100,65 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. 데이터 준비 ---
+# --- 3. 데이터 준비 (이미지 매칭) ---
 
-# 3.1 명대사 데이터
+# 명언 데이터에 'image' 필드를 추가하여 1:1 매칭
+# 명언의 순서는 중요하지 않고, 'image' 필드만 확인하면 됩니다.
 quotes_data = [
-    {
-        "text": "When you two save the city.. maybe everyone will see reptiles ain't that different.",
-        "kor": "너희 둘이 도시를 구하면.. 아마 모두가 파충류도 다르지 않다는 걸 알게 될 거야.",
-        "char": "Gary (Zootopia 2)",
-        "color": "#4CAF50" # 뱀(Reptile) 그린
-    },
-    {
-        "text": "No matter what type of animal you are, change starts with you.",
-        "kor": "네가 어떤 동물이든, 변화는 너로부터 시작해.",
-        "char": "Judy Hopps",
-        "color": "#3a7bd5" # 주디 블루
-    },
-    {
-        "text": "Life's a little bit messy. We all make mistakes.",
-        "kor": "삶은 조금 엉망진창이야. 우린 모두 실수를 하지.",
-        "char": "Judy Hopps",
-        "color": "#9C27B0" # 감성 퍼플
-    },
-    {
-        "text": "It's called a hustle, sweetheart.",
-        "kor": "이게 바로 인생의 기술이야, 자기야.",
-        "char": "Nick Wilde",
-        "color": "#FF9800" # 닉 오렌지
-    },
     {
         "text": "I won't let fear divide us.",
         "kor": "난 두려움이 우리를 갈라놓도록 내버려두지 않을 거야.",
         "char": "Nick Wilde",
-        "color": "#FF9800" # 닉 오렌지
-    },
-        {
-        "text": "Never let them see that they get to you.",
-        "kor": "그들이 널 괴롭히는 게 통했다는 걸 절대 들키지 마.",
-        "char": "Nick Wilde",
-        "color": "#FF9800" # 닉 오렌지
+        "color": "#FF9800",
+        "image": "zootopia1.jpg" # <--- 명시적으로 1번 이미지 연결
     },
     {
         "text": "Sometimes we come last, but we did our best.",
         "kor": "때로는 꼴찌를 할 수도 있어, 하지만 우린 최선을 다했잖아.",
         "char": "OST - Try Everything",
-        "color": "#E91E63" # 가젤 핑크
+        "color": "#E91E63",
+        "image": "zootopia2.jpg" # <--- 명시적으로 2번 이미지 연결 (첫 번째 명언)
+    },
+    {
+        "text": "When you two save the city.. maybe everyone will see reptiles ain't that different.",
+        "kor": "너희 둘이 도시를 구하면.. 아마 모두가 파충류도 다르지 않다는 걸 알게 될 거야.",
+        "char": "Gary (Zootopia 2)",
+        "color": "#4CAF50",
+        "image": "zootopia2.jpg" # <--- 명시적으로 2번 이미지 연결 (두 번째 명언)
+    },
+    {
+        "text": "Never let them see that they get to you.",
+        "kor": "그들이 널 괴롭히는 게 통했다는 걸 절대 들키지 마.",
+        "char": "Nick Wilde",
+        "color": "#FF9800",
+        "image": "zootopia3.jpg" # <--- 명시적으로 3번 이미지 연결 (첫 번째 명언)
+    },
+    {
+        "text": "It's called a hustle, sweetheart.",
+        "kor": "이게 바로 인생의 기술이야, 자기야.",
+        "char": "Nick Wilde",
+        "color": "#FF9800",
+        "image": "zootopia3.jpg" # <--- 명시적으로 3번 이미지 연결 (두 번째 명언)
+    },
+    {
+        "text": "No matter what type of animal you are, change starts with you.",
+        "kor": "네가 어떤 동물이든, 변화는 너로부터 시작해.",
+        "char": "Judy Hopps",
+        "color": "#3a7bd5",
+        "image": "zootopia4.jpg" # <--- 명시적으로 4번 이미지 연결
+    },
+    {
+        "text": "Life's a little bit messy. We all make mistakes.",
+        "kor": "삶은 조금 엉망진창이야. 우린 모두 실수를 하지.",
+        "char": "Judy Hopps",
+        "color": "#9C27B0",
+        "image": "zootopia5.jpg" # <--- 명시적으로 5번 이미지 연결
     }
 ]
 
-# 3.2 이미지 파일 리스트 (5장)
-image_files = [
-    "zootopia1.jpg",
-    "zootopia2.jpg",
-    "zootopia3.jpg",
-    "zootopia4.jpg",
-    "zootopia5.jpg"
-]
-
-# --- 4. 세션 상태 초기화 (새로고침해도 유지되도록) ---
+# --- 4. 세션 상태 초기화 ---
 if 'quote_index' not in st.session_state:
     st.session_state.quote_index = random.randint(0, len(quotes_data)-1)
-
-# 이미지 인덱스도 세션에 저장
-if 'image_index' not in st.session_state:
-    # 파일이 하나라도 있을 때만 인덱스 생성
-    if len(image_files) > 0:
-        st.session_state.image_index = random.randint(0, len(image_files)-1)
-    else:
-        st.session_state.image_index = -1 # 이미지가 없을 경우 대비
 
 # --- 5. 메인 화면 구성 ---
 
@@ -175,7 +166,7 @@ if 'image_index' not in st.session_state:
 st.markdown('<div class="main-title">ZOOTOPIA<br><span style="font-size:1.5rem">Motivation Station</span></div>', unsafe_allow_html=True)
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 현재 선택된 데이터 가져오기
+# 현재 선택된 명언 데이터 가져오기
 current_q = quotes_data[st.session_state.quote_index]
 
 # 레이아웃 컬럼
@@ -183,17 +174,14 @@ col1, col2, col3 = st.columns([1, 6, 1])
 
 with col2:
     # --- 이미지 표시 영역 ---
-    # 현재 인덱스의 이미지 파일명 가져오기
-    if st.session_state.image_index != -1:
-        current_image_file = image_files[st.session_state.image_index]
-        
-        # 파일이 실제로 존재하는지 확인 후 표시 (에러 방지)
-        if os.path.exists(current_image_file):
-            st.image(current_image_file, caption="Zootopia Vibes 🐾", use_container_width=True)
-        else:
-            # 이미지를 찾지 못했을 때 표시할 대체 텍스트 (혹은 기본 이미지 URL)
-            st.warning(f"이미지 파일을 찾을 수 없습니다: {current_image_file}")
-            st.info("zootopia1.jpg ~ zootopia5.jpg 파일을 파이썬 파일과 같은 폴더에 넣어주세요.")
+    current_image_file = current_q['image'] # 명언 데이터에 저장된 이미지 파일명을 가져옴
+    
+    # 파일이 실제로 존재하는지 확인 후 표시 (에러 방지)
+    if os.path.exists(current_image_file):
+        st.image(current_image_file, caption=f"Image: {current_image_file}", use_container_width=True)
+    else:
+        st.warning(f"이미지 파일을 찾을 수 없습니다: {current_image_file}")
+        st.info("zootopia1.jpg ~ zootopia5.jpg 파일을 파이썬 파일과 같은 폴더에 넣어주세요.")
 
     # --- 명대사 카드 영역 ---
     st.markdown(f"""
@@ -212,18 +200,11 @@ with btn_col:
         with st.spinner('🐰 주디와 닉이 새로운 영감을 찾아오고 있습니다...'):
             time.sleep(0.6) # 약간의 딜레이
 
-            # 1. 새로운 명언 인덱스 뽑기 (중복 방지)
+            # 새로운 명언 인덱스만 뽑기 (명언에 매칭된 이미지는 자동으로 따라옴)
             new_quote_idx = random.randint(0, len(quotes_data)-1)
             while new_quote_idx == st.session_state.quote_index and len(quotes_data) > 1:
                 new_quote_idx = random.randint(0, len(quotes_data)-1)
             st.session_state.quote_index = new_quote_idx
-
-            # 2. 새로운 이미지 인덱스 뽑기 (중복 방지, 이미지가 2장 이상일 때만)
-            if len(image_files) > 1:
-                new_image_idx = random.randint(0, len(image_files)-1)
-                while new_image_idx == st.session_state.image_index:
-                    new_image_idx = random.randint(0, len(image_files)-1)
-                st.session_state.image_index = new_image_idx
 
             st.rerun()
 
