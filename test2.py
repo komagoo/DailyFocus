@@ -1,6 +1,7 @@
 import streamlit as st
 import random
 import time
+import os # 파일 존재 여부 확인용
 
 # --- 1. 페이지 설정 (주토피아 테마) ---
 st.set_page_config(
@@ -86,19 +87,22 @@ st.markdown("""
         box-shadow: 0 6px 20px rgba(255, 128, 8, 0.6);
     }
     
-    /* 이미지 둥글게 */
+    /* 이미지 스타일 */
     img {
         border-radius: 15px;
         margin-bottom: 20px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        transition: all 0.3s ease-in-out;
+    }
+    img:hover {
+        transform: scale(1.01);
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. 데이터 준비 (명대사 & 이미지 매칭) ---
-# 로컬 이미지를 사용하려면 같은 폴더에 이미지를 넣고 파일명을 맞춰주세요.
-# 일단 웹 URL을 사용하여 바로 작동되도록 설정했습니다. 필요하면 파일명으로 바꾸세요!
+# --- 3. 데이터 준비 ---
 
+# 3.1 명대사 데이터
 quotes_data = [
     {
         "text": "When you two save the city.. maybe everyone will see reptiles ain't that different.",
@@ -119,6 +123,18 @@ quotes_data = [
         "color": "#9C27B0" # 감성 퍼플
     },
     {
+        "text": "It's called a hustle, sweetheart.",
+        "kor": "이게 바로 인생의 기술이야, 자기야.",
+        "char": "Nick Wilde",
+        "color": "#FF9800" # 닉 오렌지
+    },
+    {
+        "text": "I won't let fear divide us.",
+        "kor": "난 두려움이 우리를 갈라놓도록 내버려두지 않을 거야.",
+        "char": "Nick Wilde",
+        "color": "#FF9800" # 닉 오렌지
+    },
+        {
         "text": "Never let them see that they get to you.",
         "kor": "그들이 널 괴롭히는 게 통했다는 걸 절대 들키지 마.",
         "char": "Nick Wilde",
@@ -127,39 +143,59 @@ quotes_data = [
     {
         "text": "Sometimes we come last, but we did our best.",
         "kor": "때로는 꼴찌를 할 수도 있어, 하지만 우린 최선을 다했잖아.",
-        "char": "Gazelle & Zootopia Citizens",
+        "char": "OST - Try Everything",
         "color": "#E91E63" # 가젤 핑크
     }
 ]
 
-# 세션 상태 초기화
+# 3.2 이미지 파일 리스트 (5장)
+image_files = [
+    "zootopia1.jpg",
+    "zootopia2.jpg",
+    "zootopia3.jpg",
+    "zootopia4.jpg",
+    "zootopia5.jpg"
+]
+
+# --- 4. 세션 상태 초기화 (새로고침해도 유지되도록) ---
 if 'quote_index' not in st.session_state:
     st.session_state.quote_index = random.randint(0, len(quotes_data)-1)
 
-# --- 4. 메인 화면 구성 ---
+# 이미지 인덱스도 세션에 저장
+if 'image_index' not in st.session_state:
+    # 파일이 하나라도 있을 때만 인덱스 생성
+    if len(image_files) > 0:
+        st.session_state.image_index = random.randint(0, len(image_files)-1)
+    else:
+        st.session_state.image_index = -1 # 이미지가 없을 경우 대비
+
+# --- 5. 메인 화면 구성 ---
 
 # 타이틀
 st.markdown('<div class="main-title">ZOOTOPIA<br><span style="font-size:1.5rem">Motivation Station</span></div>', unsafe_allow_html=True)
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 현재 선택된 명대사 가져오기
+# 현재 선택된 데이터 가져오기
 current_q = quotes_data[st.session_state.quote_index]
 
-# 이미지 영역 (보여주신 이미지 2장 중 랜덤 또는 분위기에 맞는 것 출력)
-# 실제 배포 시에는 'zootopia1.jpg', 'zootopia2.jpg' 처럼 파일을 업로드해서 쓰세요.
-# 여기서는 예시로 플레이스홀더를 사용합니다.
+# 레이아웃 컬럼
 col1, col2, col3 = st.columns([1, 6, 1])
 
 with col2:
-    # 닉과 주디 이미지 (보여주신 이미지 1번 느낌)
-    if current_q['char'] == "Nick Wilde" or "reptiles" in current_q['text']:
-        # 닉이거나 2편 느낌이면 살짝 와일드한 이미지
-        st.image("zootopia2.jpg", caption="Zootopia 2 Vibes", use_container_width=True)
-    else:
-        # 주디거나 감성적인 느낌
-        st.image("zootopia1.jpg", caption="Try Everything!", use_container_width=True)
+    # --- 이미지 표시 영역 ---
+    # 현재 인덱스의 이미지 파일명 가져오기
+    if st.session_state.image_index != -1:
+        current_image_file = image_files[st.session_state.image_index]
+        
+        # 파일이 실제로 존재하는지 확인 후 표시 (에러 방지)
+        if os.path.exists(current_image_file):
+            st.image(current_image_file, caption="Zootopia Vibes 🐾", use_container_width=True)
+        else:
+            # 이미지를 찾지 못했을 때 표시할 대체 텍스트 (혹은 기본 이미지 URL)
+            st.warning(f"이미지 파일을 찾을 수 없습니다: {current_image_file}")
+            st.info("zootopia1.jpg ~ zootopia5.jpg 파일을 파이썬 파일과 같은 폴더에 넣어주세요.")
 
-    # 명대사 카드 영역
+    # --- 명대사 카드 영역 ---
     st.markdown(f"""
     <div class="quote-card" style="border-top: 5px solid {current_q['color']};">
         <div class="quote-text">"{current_q['text']}"</div>
@@ -168,18 +204,27 @@ with col2:
     </div>
     """, unsafe_allow_html=True)
 
-# --- 5. 버튼 (Try Everything) ---
+# --- 6. 버튼 (Try Everything) ---
 _, btn_col, _ = st.columns([1, 4, 1])
 with btn_col:
-    if st.button("🥕 Try Everything! (새로운 명언 보기)"):
-        # 로딩 효과 (주디가 뛰어가는 느낌)
-        with st.spinner('🐰 주디가 명언을 배달하고 있습니다...'):
-            time.sleep(0.8) # 0.8초 딜레이로 기대감 조성
-            # 새로운 랜덤 인덱스 (같은 거 안 나오게)
-            new_idx = random.randint(0, len(quotes_data)-1)
-            while new_idx == st.session_state.quote_index:
-                new_idx = random.randint(0, len(quotes_data)-1)
-            st.session_state.quote_index = new_idx
+    if st.button("🥕 Try Everything! (새로운 영감 얻기)"):
+        # 로딩 효과
+        with st.spinner('🐰 주디와 닉이 새로운 영감을 찾아오고 있습니다...'):
+            time.sleep(0.6) # 약간의 딜레이
+
+            # 1. 새로운 명언 인덱스 뽑기 (중복 방지)
+            new_quote_idx = random.randint(0, len(quotes_data)-1)
+            while new_quote_idx == st.session_state.quote_index and len(quotes_data) > 1:
+                new_quote_idx = random.randint(0, len(quotes_data)-1)
+            st.session_state.quote_index = new_quote_idx
+
+            # 2. 새로운 이미지 인덱스 뽑기 (중복 방지, 이미지가 2장 이상일 때만)
+            if len(image_files) > 1:
+                new_image_idx = random.randint(0, len(image_files)-1)
+                while new_image_idx == st.session_state.image_index:
+                    new_image_idx = random.randint(0, len(image_files)-1)
+                st.session_state.image_index = new_image_idx
+
             st.rerun()
 
 # 하단 푸터
